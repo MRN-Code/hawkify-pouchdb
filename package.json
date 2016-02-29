@@ -1,0 +1,19 @@
+{
+  "name": "hawkify-pouchdb",
+  "version": "1.0.0",
+  "description": "Make PouchDB HTTP requests use Hawk authentication.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "author": "Cory Reed <creed@mrn.org>",
+  "license": "MIT",
+  "dependencies": {
+    "hawk": "^4.1.2",
+    "pouchdb": "^5.2.1"
+  },
+  "devDependencies": {
+    "pouchdb": "^5.2.1",
+    "tape": "^4.4.0"
+  }
+}

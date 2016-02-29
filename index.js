@@ -17,7 +17,7 @@ const hawk = require('hawk');
  *   key: 'abdcef1234567890',
  *   user: 'Bob',
  * };
- * 
+ *
  * hawkifyPouchDB(PouchDB, myCredentials);
  *
  * const myDb = new PouchDB('db-name');
@@ -28,9 +28,13 @@ const hawk = require('hawk');
  * Hawk's documentation for further info.
  * @param {string} credentials.algorithm
  * @param {string} credentials.key
+ * @returns {function} Restore PouchDB's original AJAX functionality by calling
+ * this function.
  */
 module.exports = function hawkifyPouchDB(PouchDB, credentials) {
-    const PouchDBAjax = PouchDB.utils.ajax;
+    if (typeof PouchDB === 'undefined' || !(PouchDB instanceof Function)) {
+        throw new Error('Expected PouchDB');
+    }
 
     if (
         typeof credentials === 'undefined' ||
@@ -47,9 +51,15 @@ module.exports = function hawkifyPouchDB(PouchDB, credentials) {
         throw new Error('Expected Hawk credentials to include key');
     }
 
+    const pouchDBAjax = PouchDB.utils.ajax;
+
     PouchDB.utils.ajax = function(options, callback) {
         options.hawk = credentials;
 
-        return PouchDBAjax(options, callback);
-    });
+        return pouchDBAjax(options, callback);
+    };
+
+    return function restore() {
+        PouchDB.utils.ajax = pouchDBAjax;
+    };
 };

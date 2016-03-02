@@ -30,5 +30,13 @@
     "validate",
     "lint",
     "test"
-  ]
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MRN-Code/hawkify-pouchdb.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MRN-Code/hawkify-pouchdb/issues"
+  },
+  "homepage": "https://github.com/MRN-Code/hawkify-pouchdb#readme"
 }

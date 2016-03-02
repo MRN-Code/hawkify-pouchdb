@@ -5,6 +5,10 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint index.js test.js",
+    "preversion": "git checkout master && git pull && npm ls",
+    "publish-major": "npm run preversion && npm version major && git push origin master --tags && npm publish",
+    "publish-minor": "npm run preversion && npm version minor && git push origin master --tags && npm publish",
+    "publish-patch": "npm run preversion && npm version patch && git push origin master --tags && npm publish",
     "test": "node test.js",
     "validate": "npm ls"
   },

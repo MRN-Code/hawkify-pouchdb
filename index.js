@@ -59,7 +59,9 @@ module.exports = function hawkifyPouchDB(PouchDB, credentials) {
     const pouchDBAjax = PouchDB.utils.ajax;
 
     PouchDB.utils.ajax = function(options, callback) {
-        options.hawk = credentials;
+        options.hawk = {
+            credentials: credentials,
+        };
 
         return pouchDBAjax(options, callback);
     };

@@ -82,7 +82,11 @@ tape('passes credentials', t => {
         }
 
         t.ok(ajaxSpy.called, 'calls AJAX'),
-        t.deepEqual(ajaxSpy.firstCall.args[0].hawk, credentials, 'passes credentials');
+        t.deepEqual(
+            ajaxSpy.firstCall.args[0].hawk.credentials,
+            credentials,
+            'passes credentials'
+        );
 
         restore();
         ajaxSpy.restore();

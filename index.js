@@ -1,4 +1,7 @@
+/* eslint strict:0 */
 'use strict';
+
+const merge = require('lodash.merge');
 
 /**
  * Hawk-ify PouchDB.
@@ -31,40 +34,40 @@
  * this function.
  */
 module.exports = function hawkifyPouchDB(PouchDB, credentials) {
-    if (typeof PouchDB === 'undefined' || !(PouchDB instanceof Function)) {
-        throw new Error('Expected PouchDB');
-    }
+  if (typeof PouchDB === 'undefined' || !(PouchDB instanceof Function)) {
+    throw new Error('Expected PouchDB');
+  }
 
-    if (
-        typeof credentials === 'undefined' ||
-        !(credentials instanceof Object)
-    ) {
-        throw new Error('Expected Hawk credentials');
-    }
+  if (
+    typeof credentials === 'undefined' ||
+    !(credentials instanceof Object)
+  ) {
+    throw new Error('Expected Hawk credentials');
+  }
 
-    if (!credentials.algorithm) {
-        throw new Error('Expected Hawk credentials to include algorithm');
-    }
+  if (!credentials.algorithm) {
+    throw new Error('Expected Hawk credentials to include algorithm');
+  }
 
-    if (!credentials.id) {
-        throw new Error('Expected Hawk credentials to include ID');
-    }
+  if (!credentials.id) {
+    throw new Error('Expected Hawk credentials to include ID');
+  }
 
-    if (!credentials.key) {
-        throw new Error('Expected Hawk credentials to include key');
-    }
+  if (!credentials.key) {
+    throw new Error('Expected Hawk credentials to include key');
+  }
 
-    const pouchDBAjax = PouchDB.utils.ajax;
+  const pouchDBAjax = PouchDB.utils.ajax;
 
-    PouchDB.utils.ajax = function(options, callback) {
-        options.hawk = {
-            credentials: credentials,
-        };
+  PouchDB.utils.ajax = function(options, callback) { // eslint-disable-line
+    return pouchDBAjax(merge({}, options, {
+      hawk: {
+        credentials: credentials, // eslint-disable-line object-shorthand
+      },
+    }), callback);
+  };
 
-        return pouchDBAjax(options, callback);
-    };
-
-    return function restore() {
-        PouchDB.utils.ajax = pouchDBAjax;
-    };
+  return function restore() {
+    PouchDB.utils.ajax = pouchDBAjax; // eslint-disable-line no-param-reassign
+  };
 };

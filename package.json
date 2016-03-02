@@ -4,12 +4,18 @@
   "description": "Make PouchDB HTTP requests use Hawk authentication.",
   "main": "index.js",
   "scripts": {
+    "lint": "eslint index.js test.js",
     "test": "node test.js"
   },
   "author": "Cory Reed <creed@mrn.org>",
   "license": "MIT",
-  "dependencies": {},
+  "dependencies": {
+    "lodash.merge": "^4.3.2"
+  },
   "devDependencies": {
+    "eslint": "^2.2.0",
+    "eslint-config-airbnb": "^6.0.2",
+    "eslint-plugin-react": "^4.1.0",
     "memdown": "^1.1.2",
     "nock": "^7.2.2",
     "pouchdb": "^5.2.1",

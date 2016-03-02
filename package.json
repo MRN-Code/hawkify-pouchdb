@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint index.js test.js",
-    "test": "node test.js"
+    "test": "node test.js",
+    "validate": "npm ls"
   },
   "author": "Cory Reed <creed@mrn.org>",
   "license": "MIT",
@@ -16,11 +17,18 @@
     "eslint": "^2.2.0",
     "eslint-config-airbnb": "^6.0.2",
     "eslint-plugin-react": "^4.1.0",
+    "hawk": "^4.1.2",
     "memdown": "^1.1.2",
     "nock": "^7.2.2",
     "pouchdb": "^5.2.1",
+    "pre-commit": "^1.1.2",
     "request": "^2.69.0",
     "sinon": "^1.17.3",
     "tape": "^4.4.0"
-  }
+  },
+  "pre-commit": [
+    "validate",
+    "lint",
+    "test"
+  ]
 }

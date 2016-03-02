@@ -27,6 +27,7 @@ const hawk = require('hawk');
  * properties besides `algorithm` and `key` to validate your signature. See
  * Hawk's documentation for further info.
  * @param {string} credentials.algorithm
+ * @param {string} credentials.id
  * @param {string} credentials.key
  * @returns {function} Restore PouchDB's original AJAX functionality by calling
  * this function.
@@ -45,6 +46,10 @@ module.exports = function hawkifyPouchDB(PouchDB, credentials) {
 
     if (!credentials.algorithm) {
         throw new Error('Expected Hawk credentials to include algorithm');
+    }
+
+    if (!credentials.id) {
+        throw new Error('Expected Hawk credentials to include ID');
     }
 
     if (!credentials.key) {

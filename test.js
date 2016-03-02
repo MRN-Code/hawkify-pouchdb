@@ -9,6 +9,7 @@ const tape = require('tape');
 function getValidCredentials() {
     return {
         algorithm: 'sha256',
+        id: 'test-ID',
         key: 'most-unique-key',
         user: 'Most Premium User',
     };
@@ -22,11 +23,24 @@ tape('argument errors', t => {
         'without valid credentials'
     );
     t.throws(
-        hawkifyPouchDB.bind(null, PouchDB, { algorithm: 'hey' }),
+        hawkifyPouchDB.bind(null, PouchDB, {
+            algorithm: 'hey',
+            id: 'hey',
+        }),
         'without credentials key'
     );
     t.throws(
-        hawkifyPouchDB.bind(null, PouchDB, { key: 'hey' }),
+        hawkifyPouchDB.bind(null, PouchDB, {
+            algorithm: 'hey',
+            key: 'hey',
+        }),
+        'without credentials ID'
+    );
+    t.throws(
+        hawkifyPouchDB.bind(null, PouchDB, {
+            id: 'hey',
+            key: 'hey',
+        }),
         'without credentials algorithm'
     );
     t.end();

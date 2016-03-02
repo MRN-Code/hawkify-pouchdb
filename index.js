@@ -1,7 +1,5 @@
 'use strict';
 
-const hawk = require('hawk');
-
 /**
  * Hawk-ify PouchDB.
  * @module

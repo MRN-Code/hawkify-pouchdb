@@ -1,4 +1,3 @@
-/* eslint strict:0 */
 'use strict';
 
 // const merge = require('lodash.merge');
@@ -12,13 +11,16 @@
  *
  * @see {@link https://github.com/pouchdb/pouchdb/issues/5322|cannot-wrap-pouchdb-ajax}
  * The intent of this package is to be able to provide runtime modification of ajax
- * requests.  This package's API expects to wrap the internal pouchdb-ajax function.
- * In the 5.4.x release, this capability was removed.  It is likely to be restored.
- * Hence, this package's API maintains the assumptions of wrapping, even if true wrapping
- * is not acheived until the closure of #5322.  Until then, `credentials` are simply
- * returned, and modify _all_ ajax requests as specified _once_ on initial call
- * to this package.  in the future, `credentials` can be a function or an object
- * to modify requests.
+ * requests specifically to append hawk authentication/security headers.
+ * This package's API expects to wrap the internal pouchdb-ajax function to acheive
+ * the above. In the 5.4.x pouchdb release, this capability was removed.
+ * It is likely to be restored. Hence, this package's API maintains the assumption
+ * that pouchdb-ajax is wrappable.  It will not be truly wrappable is until the
+ * closure of #5322.  Until then, hawk `credentials` are simply supplied on first call,
+ * and will be used on each request.  In the future, `credentials` can be a function or an object
+ * to modify requests, meaning the credentials can be dynamically updated.
+ * Wrapping the ajax function is a desireable to trait such that we may _update_
+ * the creditials in the event that the creditials expire!
  *
  * @example
  * const PouchDB = require('pouchdb');
@@ -41,8 +43,7 @@
  * @param {string} credentials.algorithm
  * @param {string} credentials.id
  * @param {string} credentials.key
- * @returns {function} Restore PouchDB's original AJAX functionality by calling
- * this function.
+ * @returns {function} pouchdb-ajax compatible function
  */
 module.exports = function hawkifyPouchDB(toWrap, credentials) {
   if (typeof toWrap === 'undefined' || !(toWrap instanceof Function)) {

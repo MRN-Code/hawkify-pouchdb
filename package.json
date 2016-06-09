@@ -2,29 +2,31 @@
   "name": "hawkify-pouchdb",
   "version": "1.0.1",
   "description": "Make PouchDB HTTP requests use Hawk authentication.",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "lint": "eslint index.js test.js",
     "preversion": "git checkout master && git pull && npm ls",
     "publish-major": "npm run preversion && npm version major && git push origin master --tags && npm publish",
     "publish-minor": "npm run preversion && npm version minor && git push origin master --tags && npm publish",
     "publish-patch": "npm run preversion && npm version patch && git push origin master --tags && npm publish",
-    "test": "node test.js",
+    "test": "node test/index.js",
     "validate": "npm ls"
   },
   "author": "Cory Reed <creed@mrn.org>",
   "license": "MIT",
   "dependencies": {
-    "lodash.merge": "^4.3.2"
+    "lodash.merge": "^4.3.2",
+    "pouchdb-ajax": "^5.4.1"
   },
   "devDependencies": {
     "eslint": "^2.2.0",
     "eslint-config-airbnb": "^6.0.2",
     "eslint-plugin-react": "^4.1.0",
     "hawk": "^4.1.2",
-    "memdown": "^1.1.2",
     "nock": "^7.2.2",
-    "pouchdb": "^5.2.1",
+    "perish": "0.0.3",
+    "pouchdb": "^5.4.1",
+    "pouchdb-adapter-memory": "^5.4.1",
     "pre-commit": "^1.1.2",
     "request": "^2.69.0",
     "sinon": "^1.17.3",

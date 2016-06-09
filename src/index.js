@@ -1,7 +1,7 @@
 /* eslint strict:0 */
 'use strict';
 
-const merge = require('lodash.merge');
+// const merge = require('lodash.merge');
 
 /**
  * Hawk-ify PouchDB.

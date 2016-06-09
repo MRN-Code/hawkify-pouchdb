@@ -9,18 +9,8 @@ const hawk = require('hawk');
 const hawkifyPouchDB = require('../src/index.js');
 const http = require('http');
 const merge = require('lodash.merge');
-const nock = require('nock');
 const sinon = require('sinon');
 const tape = require('tape');
-
-function getValidCredentials() {
-  return {
-    algorithm: 'sha256',
-    id: 'test-ID',
-    key: 'most-unique-key',
-    user: 'Most Premium User',
-  };
-}
 
 tape('argument errors', t => {
   t.throws(hawkifyPouchDB, 'without args');

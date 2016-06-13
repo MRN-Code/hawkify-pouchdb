@@ -1,102 +1,46 @@
 /* eslint strict:0 */
 'use strict';
 
-const hawk = require('hawk');
-const hawkifyPouchDB = require('./index.js');
-const http = require('http');
-const memdown = require('memdown');
-const merge = require('lodash.merge');
-const nock = require('nock');
+// require('./error-util')
 const PouchDB = require('pouchdb');
+PouchDB.plugin(require('pouchdb-adapter-memory'));
+const ajax = require('pouchdb-ajax');
+const hawk = require('hawk');
+const hawkifyPouchDB = require('../src/index.js');
+const http = require('http');
+const merge = require('lodash.merge');
 const sinon = require('sinon');
 const tape = require('tape');
 
-function getValidCredentials() {
-  return {
-    algorithm: 'sha256',
-    id: 'test-ID',
-    key: 'most-unique-key',
-    user: 'Most Premium User',
-  };
-}
-
 tape('argument errors', t => {
   t.throws(hawkifyPouchDB, 'without args');
-  t.throws(hawkifyPouchDB.bind(null, PouchDB), 'without credentials');
+  t.throws(hawkifyPouchDB.bind(null, ajax), 'without credentials');
   t.throws(
-    hawkifyPouchDB.bind(null, PouchDB, {}),
+    hawkifyPouchDB.bind(null, ajax, {}),
     'without valid credentials'
   );
   t.throws(
-    hawkifyPouchDB.bind(null, PouchDB, {
+    hawkifyPouchDB.bind(null, ajax, {
       algorithm: 'hey',
       id: 'hey',
     }),
     'without credentials key'
   );
   t.throws(
-    hawkifyPouchDB.bind(null, PouchDB, {
+    hawkifyPouchDB.bind(null, ajax, {
       algorithm: 'hey',
       key: 'hey',
     }),
     'without credentials ID'
   );
   t.throws(
-    hawkifyPouchDB.bind(null, PouchDB, {
+    hawkifyPouchDB.bind(null, ajax, {
       id: 'hey',
       key: 'hey',
     }),
     'without credentials algorithm'
   );
   t.end();
-});
-
-tape('restores AJAX', t => {
-  const originalAjax = PouchDB.utils.ajax;
-  const restore = hawkifyPouchDB(PouchDB, getValidCredentials());
-
-  t.ok(restore instanceof Function, 'returns restore function');
-  restore();
-  t.equal(PouchDB.utils.ajax, originalAjax, 'restores original AJAX');
-  t.end();
-});
-
-tape('passes credentials', t => {
-  t.plan(2);
-
-  const ajaxSpy = sinon.spy(PouchDB.utils, 'ajax');
-  const credentials = getValidCredentials();
-  const dbPath = '/my-database';
-  const host = 'http://localhost:5984';
-
-  const restore = hawkifyPouchDB(PouchDB, credentials);
-
-  nock(host).post(dbPath).reply(200);
-
-  PouchDB.utils.ajax({
-    body: {
-      _id: 1,
-      _rev: 2,
-      my: 'prop',
-    },
-    method: 'POST',
-    uri: host + dbPath,
-  }, (err) => { // eslint-disable-line consistent-return
-    if (err) {
-      return t.end(err);
-    }
-
-    t.ok(ajaxSpy.called, 'calls AJAX');
-
-    t.deepEqual(
-      ajaxSpy.firstCall.args[0].hawk.credentials,
-      credentials,
-      'passes credentials'
-    );
-
-    restore();
-    ajaxSpy.restore();
-  });
 });
 
 tape('integration', t => {
@@ -188,12 +132,6 @@ tape('integration', t => {
   t.test('server setup', st => server.listen(port, st.end));
   t.test('sends credentials', st => {
     st.plan(2);
-
-    const db = new PouchDB({
-      db: memdown,
-      name: `http://${hostname}:${port}/${dbName}`,
-    });
-
     credentialsFunc(null, (err, credentials) => { // eslint-disable-line consistent-return
       if (err) {
         return t.end(err);
@@ -205,8 +143,10 @@ tape('integration', t => {
 
       delete newCredentials.user;
 
-      const restore = hawkifyPouchDB(PouchDB, newCredentials);
-
+      const db = new PouchDB(
+        `http://${hostname}:${port}/${dbName}`,
+        { ajax: hawkifyPouchDB(ajax, newCredentials) }
+      );
       db.get(doc1._id)
         .then(response => {
           st.ok(response, 'validates “get”');
@@ -215,8 +155,7 @@ tape('integration', t => {
         .then(response => {
           st.ok(response, 'validates “put”');
         })
-        .catch(t.end)
-        .then(restore);
+        .catch(t.end);
     });
   });
   t.test('server teardown', st => server.close(st.end));

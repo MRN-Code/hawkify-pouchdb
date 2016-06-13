@@ -1,6 +1,6 @@
 {
   "name": "hawkify-pouchdb",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Make PouchDB HTTP requests use Hawk authentication.",
   "main": "src/index.js",
   "scripts": {
@@ -40,7 +40,8 @@
     "pouchdb-adapter-memory": "^5.4.1",
     "pre-commit": "^1.1.2",
     "request": "^2.69.0",
-    "sinon": "^1.17.3"
+    "sinon": "^1.17.3",
+    "tape": "^4.5.1"
   },
   "pre-commit": [
     "validate",

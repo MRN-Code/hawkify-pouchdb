@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>index.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="%257B@link%2520https___github.com_hueniverse_hawk%257D%250A%257B@link%2520https___github.com_request_request_requestoptions-callback%257Dmodule_.html">{@link https://github.com/hueniverse/hawk}
+{@link https://github.com/request/request#requestoptions-callback}</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">index.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict';
+
+// const merge = require('lodash.merge');
+
+/**
+ * Hawk-ify PouchDB.
+ * @module
+ *
+ * {@link https://github.com/hueniverse/hawk}
+ * {@link https://github.com/request/request#requestoptions-callback}
+ *
+ * @see {@link https://github.com/pouchdb/pouchdb/issues/5322|cannot-wrap-pouchdb-ajax}
+ * The intent of this package is to be able to provide runtime modification of ajax
+ * requests specifically to append hawk authentication/security headers.
+ * This package's API expects to wrap the internal pouchdb-ajax function to acheive
+ * the above. In the 5.4.x pouchdb release, this capability was removed.
+ * It is likely to be restored. Hence, this package's API maintains the assumption
+ * that pouchdb-ajax is wrappable.  It will not be truly wrappable is until the
+ * closure of #5322.  Until then, hawk `credentials` are simply supplied on first call,
+ * and will be used on each request.  In the future, `credentials` can be a function or an object
+ * to modify requests, meaning the credentials can be dynamically updated.
+ * Wrapping the ajax function is a desireable to trait such that we may _update_
+ * the creditials in the event that the creditials expire!
+ *
+ * @example
+ * const PouchDB = require('pouchdb');
+ * const hawkifyPouchDB = require('hawkify-pouchdb');
+ * const myCredentials = {
+ *   algorithm: 'sha256',
+ *   key: 'abdcef1234567890',
+ *   user: 'Bob',
+ * };
+ *
+ * hawkifyPouchDB(PouchDB, myCredentials);
+ *
+ * const myDb = new PouchDB('db-name');
+ *
+ * @param {Function} toWrap ajax function to wrap. generally, pouchdb-ajax
+ * @param {Object|Function} credentials Hawk credentials. This can contain additional
+ * properties besides `algorithm` and `key` to validate your signature. See
+ * Hawk's documentation for further info.  If provided a function, the function
+ * shall return the properties as described for the `credentials` object.
+ * @param {string} credentials.algorithm
+ * @param {string} credentials.id
+ * @param {string} credentials.key
+ * @returns {function} pouchdb-ajax compatible function
+ */
+module.exports = function hawkifyPouchDB(toWrap, credentials) {
+  if (typeof toWrap === 'undefined' || !(toWrap instanceof Function)) {
+    throw new Error('Expected ajax function to wrap');
+  }
+
+  if (
+    typeof credentials === 'undefined' ||
+    !(credentials instanceof Object)
+  ) {
+    throw new Error('Expected Hawk credentials');
+  }
+
+  if (!credentials.algorithm) {
+    throw new Error('Expected Hawk credentials to include algorithm');
+  }
+
+  if (!credentials.id) {
+    throw new Error('Expected Hawk credentials to include ID');
+  }
+
+  if (!credentials.key) {
+    throw new Error('Expected Hawk credentials to include key');
+  }
+
+  const creds = credentials instanceof Function ? credentials() : credentials;
+  return {
+    hawk: {
+      credentials: creds, // eslint-disable-line object-shorthand
+    },
+  };
+
+  // @TODO, upon closure of #5322, restore this block and remove the return
+  // block above
+  // return function(options, callback) { // eslint-disable-line
+    // const creds = credentials instanceof Function ? credentials() : credentials;
+    // var hawkOpts = {
+    //   hawk: {
+    //     credentials: creds, // eslint-disable-line object-shorthand
+    //   },
+    // };
+    // var ajaxOpts = merge({}, options, hawkOpts);
+    // return toWrap(ajaxOpts, callback);
+  // };
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
